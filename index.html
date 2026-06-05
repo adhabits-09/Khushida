@@ -1691,9 +1691,9 @@
             </select>
           </div>
           <div class="col-12">
-            <button type="submit" class="btn-submit">
+            <button type="submit" class="btn-submit" id="submitBtn">
               <i data-lucide="send" style="width:18px;vertical-align:middle;margin-right:8px;"></i>
-              Send & Connect on WhatsApp
+              <span id="btnText">Send & Connect on WhatsApp</span>
             </button>
           </div>
         </div>
@@ -1863,6 +1863,24 @@ document.addEventListener('click', e => {
 mainForm.addEventListener('submit', function(e) {
   e.preventDefault();
 
+  // Prevent duplicate form submissions - STRICT CHECK
+  if (mainForm.dataset.submitting === 'true' || sessionStorage.getItem('khurshida_form_submitted')) {
+    console.log('[Form] Already submitted, ignoring duplicate');
+    return;
+  }
+  mainForm.dataset.submitting = 'true';
+  sessionStorage.setItem('khurshida_form_submitted', 'true');
+
+  // Disable submit button
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = document.getElementById('btnText');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.6';
+    submitBtn.style.cursor = 'not-allowed';
+  }
+  if (btnText) btnText.textContent = 'Sending...';
+
   const name = document.getElementById('inp_name').value.trim();
   const phone = document.getElementById('inp_phone').value.replace(/\D/g, '');
   const age = document.getElementById('inp_age').value;
@@ -1925,6 +1943,9 @@ Please share next steps. Thank you!`
 
   // Close the form popup
   closeForm();
+
+  // Reset submission flag after delay
+  setTimeout(() => { mainForm.dataset.submitting = 'false'; }, 3000);
 });
 
 // Smooth scroll for anchor links

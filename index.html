@@ -1691,9 +1691,9 @@
             </select>
           </div>
           <div class="col-12">
-            <button type="submit" class="btn-submit" id="submitBtn">
+            <button type="submit" class="btn-submit">
               <i data-lucide="send" style="width:18px;vertical-align:middle;margin-right:8px;"></i>
-              <span id="btnText">Send & Connect on WhatsApp</span>
+              Send & Connect on WhatsApp
             </button>
           </div>
         </div>
@@ -1729,13 +1729,7 @@ const WA_NUMBER_INT = "919548466032";
 // sessionStorage ensures it fires only once per browser tab.
 // ============================================================
 
-function trackContactEvent() {
-  if (typeof fbq !== 'undefined' && !sessionStorage.getItem('khurshida_contact_tracked')) {
-    fbq('track', 'Contact');
-    sessionStorage.setItem('khurshida_contact_tracked', 'true');
-    console.log("[Meta Pixel] Contact event tracked successfully (once per session)");
-  }
-}
+
 
 // Countdown Timer
 function updateCountdown() {
@@ -1863,24 +1857,6 @@ document.addEventListener('click', e => {
 mainForm.addEventListener('submit', function(e) {
   e.preventDefault();
 
-  // Prevent duplicate form submissions - STRICT CHECK
-  if (mainForm.dataset.submitting === 'true' || sessionStorage.getItem('khurshida_form_submitted')) {
-    console.log('[Form] Already submitted, ignoring duplicate');
-    return;
-  }
-  mainForm.dataset.submitting = 'true';
-  sessionStorage.setItem('khurshida_form_submitted', 'true');
-
-  // Disable submit button
-  const submitBtn = document.getElementById('submitBtn');
-  const btnText = document.getElementById('btnText');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.style.opacity = '0.6';
-    submitBtn.style.cursor = 'not-allowed';
-  }
-  if (btnText) btnText.textContent = 'Sending...';
-
   const name = document.getElementById('inp_name').value.trim();
   const phone = document.getElementById('inp_phone').value.replace(/\D/g, '');
   const age = document.getElementById('inp_age').value;
@@ -1916,11 +1892,8 @@ mainForm.addEventListener('submit', function(e) {
     console.error('❌ Sheet error:', error);
   });
 
-  // ============================================================
-  // META PIXEL: Contact Event - FIRES ONLY HERE
-  // Only on successful form submit, only once per session
-  // ============================================================
-  trackContactEvent();
+  // META PIXEL: Contact Event
+  if(typeof fbq!=='undefined'){fbq('track','Contact');}
 
   // ============================================================
   // REDIRECT TO WHATSAPP WITH ALL DETAILS
@@ -1944,8 +1917,7 @@ Please share next steps. Thank you!`
   // Close the form popup
   closeForm();
 
-  // Reset submission flag after delay
-  setTimeout(() => { mainForm.dataset.submitting = 'false'; }, 3000);
+
 });
 
 // Smooth scroll for anchor links
